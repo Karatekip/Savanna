@@ -104,13 +104,13 @@ class Simulation:
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.storage_house)
+            human.update(self.tree_group, self.human_group, self.storage_house, self.giraffe_group)
 
         #Storage house
         self.storage_house.update()
         
         #Statistics
-        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group)
+        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house)
 
     '''
         # New random tree

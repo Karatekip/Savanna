@@ -3,6 +3,7 @@ from entities.trees import Tree
 from entities.giraffe import Giraffe
 from entities.lions import Lion
 from entities.humans.humans import Human
+from entities.humans.houses import House
 
 class Statistics:
     def __init__(self, screen):
@@ -21,11 +22,11 @@ class Statistics:
         self.tree_mid_height = 0
         self.human_count = 0
         self.human_mid_hunger = 0
-
+        self.storage_house_food = 0
         self.last_comment = None
         
     
-    def update(self, giraffe_group, tree_group, lion_group, human_group, giraffe_comment=None, lion_comment=None):
+    def update(self, giraffe_group, tree_group, lion_group, human_group, storage_house, giraffe_comment=None, lion_comment=None):
         # Stats calculation
         self.giraffe_count = len(giraffe_group)
         self.giraffe_mid_huger = sum(giraffe.hunger for giraffe in giraffe_group) / self.giraffe_count if self.giraffe_count > 0 else 0
@@ -40,6 +41,7 @@ class Statistics:
         self.tree_mid_height = sum(tree.height for tree in tree_group) / self.tree_count if self.tree_count > 0 else 0
         self.human_count = len(human_group)
         self.human_mid_hunger = sum(human.hunger for human in human_group) / self.human_count if self.human_count > 0 else 0
+        self.storage_house_food = storage_house.food_storage
 
         # Comments 
         if giraffe_comment:
@@ -60,6 +62,7 @@ class Statistics:
         tree_height_text = self.font.render(f"Trees Height: {self.tree_mid_height:.2f}", True, (0, 255, 255))
         human_text = self.font.render(f"Humans: {self.human_count}", True, (0, 255, 255))
         human_hunger_text = self.font.render(f"Humans Average Hunger: {self.human_mid_hunger:.2f}", True, (0, 255, 255))
+        storage_house_food_text = self.font.render(f"Storage House Food: {self.storage_house_food}", True, (0, 255, 255))
 
         comment_text = self.font.render(f"Comment: {self.last_comment}", True, (0, 255, 255))
 
@@ -78,6 +81,7 @@ class Statistics:
         self.screen.blit(tree_height_text, (10, 210))
         self.screen.blit(human_text, (10, 230))
         self.screen.blit(human_hunger_text, (10, 250))
+        self.screen.blit(storage_house_food_text, (10, 270))
 
         '''
         self.screen.blit(comment_text, (10, 400))
