@@ -35,19 +35,22 @@ class Simulation:
             lion = Lion(screen_x, screen_y, screen)
             self.lion_group.add(lion)
         
+        self.house_group = pygame.sprite.Group()
+            
+
 
         self.human_spawn_x_pos = random.randint(50, screen_x - 50)
         self.human_spawn_y_pos = random.randint(50, screen_y - 50)
         self.human_spawn_pos = (self.human_spawn_x_pos, self.human_spawn_y_pos)
+
+        self.storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
+        
         self.human_group = pygame.sprite.Group()
         for i in range(self.initial_humans):
             human = Human(screen_x, screen_y, screen, self.human_spawn_pos)
             self.human_group.add(human)
 
-        self.house_group = pygame.sprite.Group()
-        for i in range(1):
-            house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
-            self.house_group.add(house)
+        
 
         self.new_rand_tree_timer = 0
 
@@ -101,10 +104,13 @@ class Simulation:
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.giraffe_group)
+            human.update(self.tree_group, self.storage_house)
+
+        #Storage house
+        self.storage_house.update()
         
         #Statistics
-        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group)
+        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group)
 
     '''
         # New random tree
@@ -118,8 +124,7 @@ class Simulation:
     def draw(self):
         self.screen.fill((160, 101, 21))
         #houses
-        for house in self.house_group:
-            house.draw()
+        self.storage_house.draw()
         
         #trees
         for tree in self.tree_group:

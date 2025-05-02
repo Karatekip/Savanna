@@ -16,7 +16,11 @@ class House(pygame.sprite.Sprite):
         self.x_pos, self.y_pos = self.human_spawn_pos
         self.rect = self.image.get_rect()
         self.rect.center = (self.x_pos, self.y_pos)
-        self.food_storage = 0
+        self.food_storage = 300
+        self.food_storage_max = 1000
+
+    def update(self):
+        print(f"Food storage: {self.food_storage}")
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
