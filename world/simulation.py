@@ -6,6 +6,9 @@ from entities.lions import Lion
 from world.statistics import Statistics
 from entities.humans.humans import Human
 from entities.humans.houses import House
+from world.seasons import Season
+from world.rain import Raindrop
+from world.rain import Rain
 
 class Simulation:
     def __init__(self, screen, screen_x, screen_y):
@@ -18,7 +21,10 @@ class Simulation:
         self.initial_trees = 40
         self.initial_giraffes = 15
         self.initial_lions = 4
-        self.initial_humans = 5
+        self.initial_humans = 3
+
+        self.season = Season(self.screen_x, self.screen_y, self.screen)
+
 
         self.tree_group = pygame.sprite.Group()
         for i in range(self.initial_trees):
@@ -43,7 +49,12 @@ class Simulation:
         self.human_spawn_y_pos = random.randint(50, screen_y - 50)
         self.human_spawn_pos = (self.human_spawn_x_pos, self.human_spawn_y_pos)
 
-        self.storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
+        #self.storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
+
+        self.storage_house_group = pygame.sprite.Group()
+        for i in range(1):
+            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
+            self.storage_house_group.add(storage_house)
         
         self.human_group = pygame.sprite.Group()
         for i in range(self.initial_humans):
@@ -90,6 +101,9 @@ class Simulation:
                                 break
     
     def update(self):
+        #season
+        self.season.update()
+
         #Giraffes
         for giraffe in self.giraffe_group:
             giraffe.update(self.tree_group, self.giraffe_group)
@@ -104,13 +118,14 @@ class Simulation:
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.human_group, self.storage_house, self.giraffe_group)
+            human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group)
 
         #Storage house
-        self.storage_house.update()
+        for storage_house in self.storage_house_group:
+            storage_house.update()
         
         #Statistics
-        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house)
+        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season)
 
     '''
         # New random tree
@@ -122,9 +137,12 @@ class Simulation:
             #print("NEW RAND TREE")
     '''
     def draw(self):
-        self.screen.fill((160, 101, 21))
+        #draw background based on season
+        self.season.draw(self.screen)
+
         #houses
-        self.storage_house.draw()
+        for storage_house in self.storage_house_group:
+            storage_house.draw()
         
         #trees
         for tree in self.tree_group:
@@ -142,6 +160,12 @@ class Simulation:
         #humans
         for human in self.human_group:
             human.draw()
+
+        '''
+        for drop in Rain.raindrops:
+            drop.draw()
+        '''
+        
         
 
         #statistics
