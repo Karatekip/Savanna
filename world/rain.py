@@ -47,6 +47,7 @@ class Raindrop(pygame.sprite.Sprite):
     def draw_splash(self):
         if self.splash_animation:
             alpha = max(0, 255 - (self.splash_timer * 8))  # fades out
+            alpha = 1
             radius = 5 + self.splash_timer  # expands
             splash_surface = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
             pygame.draw.circle(splash_surface, (0, 0, 255, alpha), (radius, radius), radius)

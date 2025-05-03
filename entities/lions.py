@@ -87,7 +87,7 @@ class Lion(pygame.sprite.Sprite):
             self.rect.y += self.y_dir
 
         #hunger
-        self.hunger += 0.012
+        self.hunger += 0.015
         if self.hunger > 100:
             self.die("Lion died of hunger.")
             print(f"Lion at {self.rect.center} has died of hunger.")

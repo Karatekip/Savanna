@@ -7,7 +7,7 @@ class Season():
         self.screen_y = screen_y
         self.screen = screen
         self.season = "dry"
-        self.duration = 3000
+        self.duration = 6000
         self.progression = 0
         self.dry_season_color = (237, 201, 175)
         self.rain_season_color = (100, 149, 237)
@@ -55,9 +55,9 @@ class Season():
         progress_ratio = min(1.0, max(0.0, progress_ratio))
 
         if self.season == "dry":
-            rain_strength = (progress_ratio ** 4)
+            rain_strength = (progress_ratio ** 6)
         elif self.season == "rain":
-            rain_strength = (1 - progress_ratio) ** 4
+            rain_strength = (1 - progress_ratio) ** 6
         self.rain.update(rain_strength)
 
 
