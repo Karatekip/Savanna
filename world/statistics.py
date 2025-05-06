@@ -5,6 +5,7 @@ from entities.lions import Lion
 from entities.humans.humans import Human
 from entities.humans.houses import House
 from world.seasons import Season
+#from world.simulation import Simulation
 
 class Statistics:
     def __init__(self, screen):
@@ -31,7 +32,7 @@ class Statistics:
         self.last_comment = None
         
     
-    def update(self, giraffe_group, tree_group, lion_group, human_group, storage_house_group, season, giraffe_comment=None, lion_comment=None):
+    def update(self, giraffe_group, tree_group, lion_group, human_group, storage_house_group, season, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, giraffe_comment=None, lion_comment=None):
         for storage_house in storage_house_group:
             storage_house = storage_house
         # Stats calculation
@@ -49,8 +50,10 @@ class Statistics:
         self.human_count = len(human_group)
         self.human_mid_hunger = sum(human.hunger for human in human_group) / self.human_count if self.human_count > 0 else 0
         self.storage_house_count = len(storage_house_group)
-        self.storage_house_food = storage_house.food_storage
-        self.storage_house_wood = storage_house.wood_storage
+        self.storage_house_food = tot_food_storage
+        self.storage_house_wood = tot_wood_storage
+        self.storage_house_food_max = tot_food_storage_max
+        self.storage_house_wood_max = tot_wood_storage_max
 
 
         # Season progression
@@ -78,8 +81,8 @@ class Statistics:
         human_text = self.font.render(f"Humans: {self.human_count}", True, (0, 255, 255))
         human_hunger_text = self.font.render(f"Humans Average Hunger: {self.human_mid_hunger:.2f}", True, (0, 255, 255))
         storage_house_text = self.font.render(f"Storage Houses: {self.storage_house_count}", True, (0, 255, 255))
-        storage_house_wood_text = self.font.render(f"Storage House Wood: {int(self.storage_house_wood)}", True, (0, 255, 255))
-        storage_house_food_text = self.font.render(f"Storage House Food: {int(self.storage_house_food)}", True, (0, 255, 255))
+        storage_house_wood_text = self.font.render(f"Storage House Wood: {int(self.storage_house_wood)} / {int(self.storage_house_food_max)}", True, (0, 255, 255))
+        storage_house_food_text = self.font.render(f"Storage House Food: {int(self.storage_house_food)} / {int(self.storage_house_wood_max)}", True, (0, 255, 255))
 
         
         season_progression_text = self.font.render(f"{self.season_name} season progression: {self.season_progression} / {self.season_duration}", True, (0, 255, 255))

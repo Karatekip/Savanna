@@ -8,10 +8,16 @@ class House(pygame.sprite.Sprite):
         self.screen_y = screen_y
         self.screen = screen
         
-        self.width, self.height = 40, 40
-        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self.color = (100, 100, 100)
-        pygame.draw.rect(self.image, self.color, (0, 0, self.width, self.height))
+        self.width, self.height = (40, 40) if first_house else (30, 30)
+        self.roof_height = 10
+        self.image = pygame.Surface((self.width, self.height + self.roof_height), pygame.SRCALPHA)
+        self.color = (120, 80, 40) if first_house else (random.randint(90,150), random.randint(60,100), random.randint(30,60))
+        pygame.draw.rect(self.image, self.color, (0, self.roof_height, self.width, self.height))
+        self.roof_color = (150, 0, 0) if first_house else (random.randint(100,180), 0, 0)
+        pygame.draw.polygon(
+            self.image, self.roof_color, 
+            [(0, self.roof_height), (self.width // 2, 0), (self.width, self.roof_height)]
+        )
         self.human_spawn_pos = human_spawn_pos
         if first_house:
             self.x_pos, self.y_pos = self.human_spawn_pos

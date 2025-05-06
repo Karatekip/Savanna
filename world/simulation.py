@@ -69,7 +69,9 @@ class Simulation:
         self.player_playing = False
 
         self.tot_food_storage = 0
+        self.tot_food_storage_max = 0
         self.tot_wood_storage = 0
+        self.tot_wood_storage_max = 0
 
         
 
@@ -128,7 +130,7 @@ class Simulation:
             storage_house.update()
         
         #Statistics
-        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season)
+        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
 
         '''
         # New random tree
@@ -143,15 +145,21 @@ class Simulation:
         
         self.tot_food_storage = 0
         self.tot_wood_storage = 0
+        self.tot_food_storage_max = 0
+        self.tot_wood_storage_max = 0
         for storage_house in self.storage_house_group:
             self.tot_food_storage += storage_house.food_storage
             self.tot_wood_storage += storage_house.wood_storage
+            self.tot_food_storage_max += storage_house.food_storage_max
+            self.tot_wood_storage_max += storage_house.wood_storage_max
 
 
 
-            if storage_house.food_storage >= storage_house.food_storage_max or storage_house.wood_storage >= storage_house.wood_storage_max:
-                new_storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=False)
-                self.storage_house_group.add(new_storage_house)
+        if self.tot_food_storage >= self.tot_food_storage_max or self.tot_wood_storage >= self.tot_wood_storage_max:
+            new_storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=False)
+            self.storage_house_group.add(new_storage_house)
+
+        
         
     def draw(self):
         #draw background based on season
