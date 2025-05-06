@@ -61,7 +61,7 @@ class Rain(pygame.sprite.Sprite):
         self.screen_y = screen_y
         self.screen = screen
         self.raindrops = pygame.sprite.Group()
-        self.num_drops = 500
+        self.num_drops = 200
         for _ in range(self.num_drops):
             raindrop = Raindrop(self.screen_x, self.screen_y, self.screen)
             self.raindrops.add(raindrop)

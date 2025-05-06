@@ -41,7 +41,7 @@ class Simulation:
             lion = Lion(screen_x, screen_y, screen)
             self.lion_group.add(lion)
         
-        self.house_group = pygame.sprite.Group()
+        #self.house_group = pygame.sprite.Group()
             
 
 
@@ -53,7 +53,7 @@ class Simulation:
 
         self.storage_house_group = pygame.sprite.Group()
         for i in range(1):
-            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
+            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=True)
             self.storage_house_group.add(storage_house)
         
         self.human_group = pygame.sprite.Group()
@@ -67,6 +67,9 @@ class Simulation:
 
         self.stats = Statistics(self.screen)
         self.player_playing = False
+
+        self.tot_food_storage = 0
+        self.tot_wood_storage = 0
 
         
 
@@ -110,7 +113,7 @@ class Simulation:
 
         #Trees
         for tree in self.tree_group:
-            tree.update(self.tree_group)
+            tree.update(self.tree_group, self.season)
 
         #Lions
         for lion in self.lion_group:
@@ -118,7 +121,7 @@ class Simulation:
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group)
+            human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group, House)
 
         #Storage house
         for storage_house in self.storage_house_group:
@@ -127,7 +130,7 @@ class Simulation:
         #Statistics
         self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season)
 
-    '''
+        '''
         # New random tree
         self.new_rand_tree_timer += 1
         if self.new_rand_tree_timer > 100:
@@ -135,7 +138,21 @@ class Simulation:
             self.tree_group.add(self.new_rand_tree)
             self.new_rand_tree_timer = 0
             #print("NEW RAND TREE")
-    '''
+        '''
+        
+        
+        self.tot_food_storage = 0
+        self.tot_wood_storage = 0
+        for storage_house in self.storage_house_group:
+            self.tot_food_storage += storage_house.food_storage
+            self.tot_wood_storage += storage_house.wood_storage
+
+
+
+            if storage_house.food_storage >= storage_house.food_storage_max or storage_house.wood_storage >= storage_house.wood_storage_max:
+                new_storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=False)
+                self.storage_house_group.add(new_storage_house)
+        
     def draw(self):
         #draw background based on season
         self.season.draw(self.screen)

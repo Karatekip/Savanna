@@ -6,8 +6,9 @@ class Season():
         self.screen_x = screen_x
         self.screen_y = screen_y
         self.screen = screen
+        self.calc_season = "dry_start"
         self.season = "dry"
-        self.duration = 6000
+        self.duration = 2000
         self.progression = 0
         self.dry_season_color = (237, 201, 175)
         self.rain_season_color = (100, 149, 237)
@@ -18,6 +19,14 @@ class Season():
 
     def update(self):
         self.progression += 1
+
+        if self.progression != 0 and (self.duration / self.progression) <= 2:
+            if self.calc_season == "dry_start":
+                self.season = "rain"
+            elif self.calc_season == "rain_start":
+                self.season = "dry"
+
+        
         # Background color
         self.color_progression = self.progression / self.duration
         if self.color_progression > 1:
@@ -32,37 +41,26 @@ class Season():
         )
 
         if self.progression > self.duration:
-            if self.season == "dry":
-                self.season = "rain"
+            if self.calc_season == "dry_start":
+                self.calc_season = "rain_start"
                 self.start_color = self.rain_season_color
                 self.end_color = self.dry_season_color
             else:
-                self.season = "dry"
+                self.calc_season = "dry_start"
                 self.start_color = self.dry_season_color
                 self.end_color = self.rain_season_color
             self.progression = 0
 
         # Rain
-        '''
-        if self.season == "rain":
-            rain_strength = min(1.0, self.progression ** 2)
-        else:
-            rain_strength = max(0.0, 1.0 - self.progression ** 2)
-        self.rain.update(rain_strength)
-        '''
 
         progress_ratio = self.progression / self.duration
         progress_ratio = min(1.0, max(0.0, progress_ratio))
 
-        if self.season == "dry":
+        if self.calc_season == "dry_start":
             rain_strength = (progress_ratio ** 6)
-        elif self.season == "rain":
+        elif self.calc_season == "rain_start":
             rain_strength = (1 - progress_ratio) ** 6
         self.rain.update(rain_strength)
-
-
-
-
 
 
     def draw(self, screen):

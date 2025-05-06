@@ -1,6 +1,7 @@
 #trees.py
 import pygame
 import random
+from world.seasons import Season
 
 class Tree(pygame.sprite.Sprite):
     def __init__(self, screen_x, screen_y, screen, x=None, y=None):
@@ -26,8 +27,12 @@ class Tree(pygame.sprite.Sprite):
         self.growth_delay = random.randint(500, 2500)
 
 
-    def update(self, tree_group):
-        self.growth_timer += 1
+    def update(self, tree_group, season):
+        if season.season == "dry":
+            self.growth_timer += 0.5
+        else:
+            self.growth_timer += 2
+
         if self.growth_timer > self.growth_delay:
             self.try_grow(tree_group)
             self.growth_timer = 0

@@ -14,6 +14,12 @@ class Human(pygame.sprite.Sprite):
         self.hunger = 0
         self.color = (51, 25, 0)
         self.width, self.height = 10, 20
+        self.age = 0
+        self.generation = 1
+
+        self.breed_timer = 0
+        self.breed_timer_interval = random.randint(500, 1000)
+
         
         
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -40,9 +46,12 @@ class Human(pygame.sprite.Sprite):
         self.food_proportion = 5
         self.caught_giraffe = False
         self.caught_wood = False
+        
+        self.build_storage_timer = 0
+        self.time_to_build_storage = 1000
 
     
-    def update(self, tree_group, humans_group, storage_house_group, giraffe_group):
+    def update(self, tree_group, humans_group, storage_house_group, giraffe_group, House):
         closest_storage_house = min(storage_house_group, key=lambda storage_house: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(storage_house.rect.center)))
         self.x_pos = float(self.rect.centerx)
         self.y_pos = float(self.rect.centery)
@@ -82,7 +91,7 @@ class Human(pygame.sprite.Sprite):
             
             if self.rect.colliderect(closest_giraffe.rect):
                 giraffe_group.remove(closest_giraffe)
-                print("Giraffe hunted by human at", self.rect.center)
+                #print("Giraffe hunted by human at", self.rect.center)
                 self.mission = "home"
                 self.caught_giraffe = True
                 self.hunger += 2
@@ -112,7 +121,7 @@ class Human(pygame.sprite.Sprite):
             if self.rect.colliderect(closest_tree.rect):
 
                 tree_group.remove(closest_tree)
-                print("Tree logged by human at", self.rect.center)
+                #print("Tree logged by human at", self.rect.center)
                 self.mission = "home"
                 self.caught_wood = True
                 self.hunger += 2
@@ -121,7 +130,7 @@ class Human(pygame.sprite.Sprite):
 
 
         # going home
-        elif self.mission == "home":
+        if self.mission == "home":
             
             target_x, target_y = self.human_spawn_pos
 
@@ -137,7 +146,7 @@ class Human(pygame.sprite.Sprite):
 
             else:
                 # Optionally play animation / sound
-                print("Human returned home at", self.rect.center)
+                #print("Human returned home at", self.rect.center)
                 self.eat_from_storage(closest_storage_house)
                 self.mission = "logging"
 
@@ -149,12 +158,29 @@ class Human(pygame.sprite.Sprite):
                     closest_storage_house.wood_storage += 20
                     self.caught_wood = False
 
-
+                '''
                 if closest_storage_house.food_storage > closest_storage_house.food_storage_max:
                     closest_storage_house.food_storage = closest_storage_house.food_storage_max
                     self.mission = "build_storage"
-
+                elif closest_storage_house.wood_storage > closest_storage_house.wood_storage_max:
+                    closest_storage_house.wood_storage = closest_storage_house.wood_storage
+                    self.mission = "build_storage"
+                '''
+        
+        '''
         # building new storage house
+        if self.mission == "build_storage":
+            self.build_storage_timer += 1
+
+
+
+            if self.build_storage_timer >= self.time_to_build_storage:
+                storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=False)
+                storage_house_group.add(storage_house)
+                print("new house")
+                self.mission = "home"
+        '''
+
 
     
     def eat_from_storage(self, storage_house):
