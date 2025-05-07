@@ -52,10 +52,13 @@ class Simulation:
         #self.storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
 
         self.storage_house_group = pygame.sprite.Group()
+        first_house = True
         for i in range(1):
-            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=True)
+            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house, self.storage_house_group)
             self.storage_house_group.add(storage_house)
         
+
+
         self.human_group = pygame.sprite.Group()
         for i in range(self.initial_humans):
             human = Human(screen_x, screen_y, screen, self.human_spawn_pos)
@@ -126,11 +129,22 @@ class Simulation:
             human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group, House)
 
         #Storage house
+        self.tot_food_storage = 0
+        self.tot_wood_storage = 0
+        self.tot_food_storage_max = 0
+        self.tot_wood_storage_max = 0
         for storage_house in self.storage_house_group:
-            storage_house.update()
+            self.tot_food_storage += storage_house.food_storage
+            self.tot_wood_storage += storage_house.wood_storage
+            self.tot_food_storage_max += storage_house.food_storage_max
+            self.tot_wood_storage_max += storage_house.wood_storage_max
+
+        for storage_house in self.storage_house_group:
+            storage_house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.storage_house_group)
         
         #Statistics
         self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
+
 
         '''
         # New random tree
@@ -142,7 +156,7 @@ class Simulation:
             #print("NEW RAND TREE")
         '''
         
-        
+        '''
         self.tot_food_storage = 0
         self.tot_wood_storage = 0
         self.tot_food_storage_max = 0
@@ -152,12 +166,10 @@ class Simulation:
             self.tot_wood_storage += storage_house.wood_storage
             self.tot_food_storage_max += storage_house.food_storage_max
             self.tot_wood_storage_max += storage_house.wood_storage_max
+        '''
 
 
-
-        if self.tot_food_storage >= self.tot_food_storage_max or self.tot_wood_storage >= self.tot_wood_storage_max:
-            new_storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=False)
-            self.storage_house_group.add(new_storage_house)
+        
 
         
         
