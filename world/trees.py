@@ -1,4 +1,3 @@
-#trees.py
 import pygame
 import random
 from world.seasons import Season
