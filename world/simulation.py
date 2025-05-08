@@ -1,6 +1,6 @@
 import pygame
 import random
-from entities.trees import Tree
+from world.trees import Tree
 from entities.giraffe import Giraffe
 from entities.lions import Lion
 from world.statistics import Statistics
