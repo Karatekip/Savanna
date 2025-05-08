@@ -1,6 +1,6 @@
 import pygame
 import random
-from entities.trees import Tree
+from world.trees import Tree
 from entities.giraffe import Giraffe
 from entities.lions import Lion
 from world.statistics import Statistics
@@ -122,7 +122,7 @@ class Simulation:
 
         #Lions
         for lion in self.lion_group:
-            lion.update(self.giraffe_group, self.lion_group)
+            lion.update(self.giraffe_group, self.lion_group, self.season.season)
 
 
         #Storage house

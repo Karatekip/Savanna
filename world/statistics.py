@@ -1,5 +1,5 @@
 import pygame
-from entities.trees import Tree
+from world.trees import Tree
 from entities.giraffe import Giraffe
 from entities.lions import Lion
 from entities.humans.humans import Human
