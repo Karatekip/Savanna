@@ -1,6 +1,7 @@
 import pygame
 import random
 from entities.giraffe import Giraffe
+from world.seasons import Season
 
 class Lion(pygame.sprite.Sprite):
     def __init__(self, screen_x, screen_y, screen, player_controlled=False):
@@ -13,7 +14,7 @@ class Lion(pygame.sprite.Sprite):
         if self.player_controlled:
             self.speed = 3
         else:
-            self.speed = random.uniform(1, 3)
+            self.speed = random.uniform(1, 2)
 
         self.hunger = 0
         self.hunger_speed = random.uniform(0.001, 0.004)
@@ -34,7 +35,7 @@ class Lion(pygame.sprite.Sprite):
         self.font = pygame.font.SysFont(None, 14)
 
         self.change_direction_timer = 0
-        self.change_direction_interval = random.randint(30, 300)
+        self.change_direction_interval = random.randint(30, 100)
 
         self.x_dir = random.choice([-1, 1]) * self.speed
         self.y_dir = random.choice([-1, 1]) * self.speed
@@ -48,7 +49,7 @@ class Lion(pygame.sprite.Sprite):
 
         self.comment = "New baby lion"
 
-    def update(self, giraffe_group, lion_group):
+    def update(self, giraffe_group, lion_group, season):
         #movement
         keys = pygame.key.get_pressed()
 
@@ -64,14 +65,45 @@ class Lion(pygame.sprite.Sprite):
             if keys[pygame.K_DOWN]:
                 self.y_dir = speed
         else:
+            lion_amount = 0
+            x_mid = 0
+            y_mid = 0
+            for lion in lion_group:
+                lion_amount += 1
+                x_mid += lion.rect.centerx
+                y_mid += lion.rect.centery
+            x_mid /= lion_amount
+            y_mid /= lion_amount
+
+
             self.change_direction_timer += 1
-            if self.change_direction_timer > self.change_direction_interval:
-                self.x_dir = random.choice([-1, 0, 1]) * self.speed
-                self.y_dir = random.choice([-1, 0, 1]) * self.speed
-                self.change_direction_timer = 0
+            if random.randint(0, 100) < 9:
+                if self.change_direction_timer > self.change_direction_interval:
+                    self.x_dir = random.choice([-1, 0, 1]) * self.speed
+                    self.y_dir = random.choice([-1, 0, 1]) * self.speed
+                    self.change_direction_timer = 0
+                else:
+                    self.x_dir = self.x_dir
+                    self.y_dir = self.y_dir
             else:
-                self.x_dir = self.x_dir
-                self.y_dir = self.y_dir
+                if self.change_direction_timer > self.change_direction_interval:
+
+                    if self.rect.centerx < x_mid:
+                        self.x_dir = self.speed
+                    elif self.rect.centerx > x_mid:
+                        self.x_dir = -self.speed
+                    else:
+                        self.x_dir = 0
+
+                    if self.rect.centery < y_mid:
+                        self.y_dir = self.speed
+                    elif self.rect.centery > y_mid:
+                        self.y_dir = -self.speed
+                    else:
+                        self.y_dir = 0
+                else:
+                    self.x_dir = self.x_dir
+                    self.y_dir = self.y_dir
 
         if self.hunger >= 10 or self.player_controlled:
             self.rect.x += self.x_dir
@@ -106,7 +138,8 @@ class Lion(pygame.sprite.Sprite):
         
 
         # breeding
-        self.breed_timer += 1
+        if season == "rain":
+            self.breed_timer += 1
         '''
         if self.player_controlled:
             self.breed_timer = self.breed_timer_interval + 1

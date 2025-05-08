@@ -122,7 +122,7 @@ class Simulation:
 
         #Lions
         for lion in self.lion_group:
-            lion.update(self.giraffe_group, self.lion_group)
+            lion.update(self.giraffe_group, self.lion_group, self.season.season)
 
         #Humans
         for human in self.human_group:
