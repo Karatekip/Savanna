@@ -51,7 +51,8 @@ class Human(pygame.sprite.Sprite):
         self.time_to_build_storage = 1000
 
     
-    def update(self, tree_group, humans_group, storage_house_group, giraffe_group, House):
+    def update(self, tree_group, humans_group, storage_house_group, giraffe_group, House, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max):
+        
         closest_storage_house = min(storage_house_group, key=lambda storage_house: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(storage_house.rect.center)))
         self.x_pos = float(self.rect.centerx)
         self.y_pos = float(self.rect.centery)
@@ -68,7 +69,7 @@ class Human(pygame.sprite.Sprite):
 
 
         #Chaising
-        if closest_storage_house.food_storage < (self.food_proportion * len(humans_group)) and self.caught_giraffe == False:
+        if tot_food_storage <= (self.food_proportion * len(humans_group)) and self.caught_giraffe == False:
             self.mission = "hunt"
         
         

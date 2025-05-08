@@ -19,7 +19,7 @@ class Simulation:
         self.clock = pygame.time.Clock()
         self.FPS = 60
         self.initial_trees = 40
-        self.initial_giraffes = 15
+        self.initial_giraffes = 20
         self.initial_lions = 4
         self.initial_humans = 3
 
@@ -52,9 +52,9 @@ class Simulation:
         #self.storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
 
         self.storage_house_group = pygame.sprite.Group()
-        first_house = True
+        house_kind = 'church'
         for i in range(1):
-            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house, self.storage_house_group)
+            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, self.storage_house_group)
             self.storage_house_group.add(storage_house)
         
 
@@ -124,9 +124,6 @@ class Simulation:
         for lion in self.lion_group:
             lion.update(self.giraffe_group, self.lion_group)
 
-        #Humans
-        for human in self.human_group:
-            human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group, House)
 
         #Storage house
         self.tot_food_storage = 0
@@ -141,6 +138,13 @@ class Simulation:
 
         for storage_house in self.storage_house_group:
             storage_house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.storage_house_group)
+
+
+        #Humans
+        for human in self.human_group:
+            human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
+
+        
         
         #Statistics
         self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)

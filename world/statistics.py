@@ -81,8 +81,8 @@ class Statistics:
         human_text = self.font.render(f"Humans: {self.human_count}", True, (0, 255, 255))
         human_hunger_text = self.font.render(f"Humans Average Hunger: {self.human_mid_hunger:.2f}", True, (0, 255, 255))
         storage_house_text = self.font.render(f"Storage Houses: {self.storage_house_count}", True, (0, 255, 255))
-        storage_house_wood_text = self.font.render(f"Storage House Wood: {int(self.storage_house_wood)} / {int(self.storage_house_food_max)}", True, (0, 255, 255))
-        storage_house_food_text = self.font.render(f"Storage House Food: {int(self.storage_house_food)} / {int(self.storage_house_wood_max)}", True, (0, 255, 255))
+        storage_house_wood_text = self.font.render(f"Storage House Wood: {int(self.storage_house_wood)} / {int(self.storage_house_wood_max)}", True, (0, 255, 255))
+        storage_house_food_text = self.font.render(f"Storage House Food: {int(self.storage_house_food)} / {int(self.storage_house_food_max)}", True, (0, 255, 255))
 
         
         season_progression_text = self.font.render(f"{self.season_name} season progression: {self.season_progression} / {self.season_duration}", True, (0, 255, 255))
