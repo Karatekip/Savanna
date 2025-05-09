@@ -25,7 +25,6 @@ class Simulation:
 
         self.season = Season(self.screen_x, self.screen_y, self.screen)
 
-
         self.tree_group = pygame.sprite.Group()
         for i in range(self.initial_trees):
             tree = Tree(self.screen_x, self.screen_y, self.screen)
@@ -112,13 +111,15 @@ class Simulation:
         #season
         self.season.update()
 
-        #Giraffes
-        for giraffe in self.giraffe_group:
-            giraffe.update(self.tree_group, self.giraffe_group)
+        
 
         #Trees
         for tree in self.tree_group:
             tree.update(self.tree_group, self.season)
+
+        #Giraffes
+        for giraffe in self.giraffe_group:
+            giraffe.update(self.tree_group, self.giraffe_group, self.season.season)
 
         #Lions
         for lion in self.lion_group:
@@ -145,35 +146,13 @@ class Simulation:
             human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
 
         
+
+        
         
         #Statistics
         self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
 
-
-        '''
-        # New random tree
-        self.new_rand_tree_timer += 1
-        if self.new_rand_tree_timer > 100:
-            self.new_rand_tree = Tree(self.screen_x, self.screen_y)
-            self.tree_group.add(self.new_rand_tree)
-            self.new_rand_tree_timer = 0
-            #print("NEW RAND TREE")
-        '''
-        
-        '''
-        self.tot_food_storage = 0
-        self.tot_wood_storage = 0
-        self.tot_food_storage_max = 0
-        self.tot_wood_storage_max = 0
-        for storage_house in self.storage_house_group:
-            self.tot_food_storage += storage_house.food_storage
-            self.tot_wood_storage += storage_house.wood_storage
-            self.tot_food_storage_max += storage_house.food_storage_max
-            self.tot_wood_storage_max += storage_house.wood_storage_max
-        '''
-
-
-        
+       
 
         
         

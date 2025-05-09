@@ -9,7 +9,7 @@ class Giraffe(pygame.sprite.Sprite):
         self.screen = screen
         self.generation = 1
         self.speed = random.uniform(0.5, 1.5)
-        self.neck_length = random.randint(3, 9)
+        self.neck_length = random.randint(3, 10)
         self.hunger = 0
         self.color = (255, 191, 125)
         self.width, self.height = 20, 20
@@ -40,7 +40,7 @@ class Giraffe(pygame.sprite.Sprite):
         self.comment = f"New baby giraffe"
 
     
-    def update(self, tree_group, giraffe_group):
+    def update(self, tree_group, giraffe_group, season):
         #movement
         self.change_direction_timer += 1
         if self.change_direction_timer > self.change_direction_interval:
@@ -65,7 +65,7 @@ class Giraffe(pygame.sprite.Sprite):
             self.rect.y += self.y_dir
 
         #hunger
-        self.hunger += 0.02
+        self.hunger += 0.015
         if self.hunger > 100:
             self.die("Giraffe died of hunger.")
             print(f"Giraffe at {self.rect.center} has died of hunger.")
@@ -80,7 +80,10 @@ class Giraffe(pygame.sprite.Sprite):
                         self.hunger = 0
 
         #breeding
-        self.breed_timer += 1
+        if season == "rain":
+            self.breed_timer += 2
+        else:
+            self.breed_timer += 0.7
         for stranger_giraffe in list(giraffe_group):
             if self.breed_timer > self.breed_timer_interval and stranger_giraffe.breed_timer > self.breed_timer_interval and self.breed_attempts < self.max_breed_attempts:
                 if self.rect.colliderect(stranger_giraffe.rect) and stranger_giraffe != self:
@@ -118,7 +121,7 @@ class Giraffe(pygame.sprite.Sprite):
         self.screen.blit(self.image, self.rect)
         
         # Draw the giraffe's neck
-        self.neck_color = (int(255 - (28 * self.neck_length)), int(28 * self.neck_length), 0)
+        self.neck_color = (int(255 - (25 * self.neck_length)), int(25 * self.neck_length), 0)
         self.neck_surface = pygame.Surface((self.width / 3, self.height / 3), pygame.SRCALPHA)
         self.neck_surface.fill(self.neck_color)
         self.neck_rect = self.neck_surface.get_rect(bottomleft=self.rect.bottomleft)

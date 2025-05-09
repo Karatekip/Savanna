@@ -131,7 +131,7 @@ class House(pygame.sprite.Sprite):
     def get_spawn_near(self, village_center, existing_houses, max_attempts=1000):
         base_radius = 50
         step_radius = 20
-        angle_step = 10 
+        angle_step = 90 
 
         for radius_multiplier in range(1, 20):  # Try up to radius ~400
             radius = base_radius + step_radius * radius_multiplier

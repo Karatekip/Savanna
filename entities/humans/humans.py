@@ -159,29 +159,37 @@ class Human(pygame.sprite.Sprite):
                     closest_storage_house.wood_storage += 20
                     self.caught_wood = False
 
-                '''
-                if closest_storage_house.food_storage > closest_storage_house.food_storage_max:
-                    closest_storage_house.food_storage = closest_storage_house.food_storage_max
-                    self.mission = "build_storage"
-                elif closest_storage_house.wood_storage > closest_storage_house.wood_storage_max:
-                    closest_storage_house.wood_storage = closest_storage_house.wood_storage
-                    self.mission = "build_storage"
-                '''
-        
-        '''
-        # building new storage house
-        if self.mission == "build_storage":
-            self.build_storage_timer += 1
 
 
-
-            if self.build_storage_timer >= self.time_to_build_storage:
-                storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, first_house=False)
-                storage_house_group.add(storage_house)
-                print("new house")
-                self.mission = "home"
-        '''
-
+        # breeding
+        self.breed_timer += 0.5
+        if self.breed_timer > self.breed_timer_interval:
+            old_mission = self.mission
+            self.mission = "breed"
+            #go to closest human that is ready to breed
+            humans_for_breeding = [human for human in humans_group if human.breed_timer > human.breed_timer_interval and human != self]
+            if len(humans_for_breeding) == 0:
+                self.mission = old_mission
+                return
+            else:
+                closest_human_to_breed = min(humans_for_breeding, key=lambda human: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(human.rect.center)))
+                target_x, target_y = closest_human_to_breed.rect.center
+                dx = target_x - self.rect.centerx
+                dy = target_y - self.rect.centery
+                distance = (dx ** 2 + dy ** 2) ** 0.5
+                if distance > 1:
+                    self.x_pos += self.speed * dx / distance
+                    self.y_pos += self.speed * dy / distance
+                    self.rect.center = (int(self.x_pos), int(self.y_pos))
+                else:
+                    #breeding
+                    self.breed_timer = 0
+                    closest_human_to_breed.breed_timer = 0
+                    baby_human = Human(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
+                    humans_group.add(baby_human)
+                    baby_human.rect.center = self.rect.center
+                    self.mission = "home"
+                    closest_human_to_breed.mission = "home"
 
     
     def eat_from_storage(self, storage_house):
