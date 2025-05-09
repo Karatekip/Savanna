@@ -26,19 +26,19 @@ class Tree(pygame.sprite.Sprite):
         self.growth_delay = random.randint(500, 2500)
 
 
-    def update(self, tree_group, season):
+    def update(self, tree_group, season, grass_group, house_group):
         if season.season == "dry":
             self.growth_timer += 0.5
         else:
             self.growth_timer += 2
 
         if self.growth_timer > self.growth_delay:
-            self.try_grow(tree_group)
+            self.try_grow(tree_group, grass_group, house_group)
             self.growth_timer = 0
         
 
 
-    def try_grow(self, tree_group):
+    def try_grow(self, tree_group, grass_group, house_group):
         # Try a few random positions around the parent
         for _ in range(5):
             angle = random.uniform(0, 2 * 3.14159)
@@ -46,13 +46,12 @@ class Tree(pygame.sprite.Sprite):
             new_x = self.rect.centerx + int(distance * pygame.math.Vector2(1, 0).rotate_rad(angle).x)
             new_y = self.rect.centery + int(distance * pygame.math.Vector2(1, 0).rotate_rad(angle).y)
 
-            # Create a temporary rect for the new tree
             temp_rect = pygame.Rect(0, 0, self.diameter, self.diameter)
             temp_rect.center = (new_x, new_y)
 
             # Ensure it's within screen and doesn't collide with others
             if 0 <= new_x <= self.screen_x and 0 <= new_y <= self.screen_y:
-                if not any(temp_rect.colliderect(tree.rect) for tree in tree_group):
+                if not any(temp_rect.colliderect(tree.rect) for tree in tree_group) and not any(temp_rect.colliderect(grass.rect) for grass in grass_group) and not any(temp_rect.colliderect(house.rect) for house in house_group):
                     new_tree = Tree(self.screen_x, self.screen_y, self.screen, new_x, new_y)
                     #new_tree.height = max(1, min(5, int(self.height + random.choice([-1, 0, 1]))))
                     new_tree.height = int(self.height + random.choice([-1, 0, 1]))

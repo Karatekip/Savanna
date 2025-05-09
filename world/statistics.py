@@ -24,17 +24,17 @@ class Statistics:
         self.tree_mid_height = 0
         self.human_count = 0
         self.human_mid_hunger = 0
-        self.storage_house_count = 0
-        self.storage_house_wood = 0
-        self.storage_house_food = 0
+        self.house_count = 0
+        self.house_wood = 0
+        self.house_food = 0
 
         self.season_progression = 0
         self.last_comment = None
         
     
-    def update(self, giraffe_group, tree_group, lion_group, human_group, storage_house_group, season, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, giraffe_comment=None, lion_comment=None):
-        for storage_house in storage_house_group:
-            storage_house = storage_house
+    def update(self, giraffe_group, tree_group, lion_group, human_group, house_group, season, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, giraffe_comment=None, lion_comment=None):
+        for house in house_group:
+            house = house
         # Stats calculation
         self.giraffe_count = len(giraffe_group)
         self.giraffe_mid_huger = sum(giraffe.hunger for giraffe in giraffe_group) / self.giraffe_count if self.giraffe_count > 0 else 0
@@ -49,11 +49,11 @@ class Statistics:
         self.tree_mid_height = sum(tree.height for tree in tree_group) / self.tree_count if self.tree_count > 0 else 0
         self.human_count = len(human_group)
         self.human_mid_hunger = sum(human.hunger for human in human_group) / self.human_count if self.human_count > 0 else 0
-        self.storage_house_count = len(storage_house_group)
-        self.storage_house_food = tot_food_storage
-        self.storage_house_wood = tot_wood_storage
-        self.storage_house_food_max = tot_food_storage_max
-        self.storage_house_wood_max = tot_wood_storage_max
+        self.house_count = len(house_group)
+        self.house_food = tot_food_storage
+        self.house_wood = tot_wood_storage
+        self.house_food_max = tot_food_storage_max
+        self.house_wood_max = tot_wood_storage_max
 
 
         # Season progression
@@ -80,9 +80,9 @@ class Statistics:
         tree_height_text = self.font.render(f"Trees Height: {self.tree_mid_height:.2f}", True, (0, 255, 255))
         human_text = self.font.render(f"Humans: {self.human_count}", True, (0, 255, 255))
         human_hunger_text = self.font.render(f"Humans Average Hunger: {self.human_mid_hunger:.2f}", True, (0, 255, 255))
-        storage_house_text = self.font.render(f"Storage Houses: {self.storage_house_count}", True, (0, 255, 255))
-        storage_house_wood_text = self.font.render(f"Storage House Wood: {int(self.storage_house_wood)} / {int(self.storage_house_wood_max)}", True, (0, 255, 255))
-        storage_house_food_text = self.font.render(f"Storage House Food: {int(self.storage_house_food)} / {int(self.storage_house_food_max)}", True, (0, 255, 255))
+        house_text = self.font.render(f"Storage Houses: {self.house_count}", True, (0, 255, 255))
+        house_wood_text = self.font.render(f"Storage House Wood: {int(self.house_wood)} / {int(self.house_wood_max)}", True, (0, 255, 255))
+        house_food_text = self.font.render(f"Storage House Food: {int(self.house_food)} / {int(self.house_food_max)}", True, (0, 255, 255))
 
         
         season_progression_text = self.font.render(f"{self.season_name} season progression: {self.season_progression} / {self.season_duration}", True, (0, 255, 255))
@@ -104,9 +104,9 @@ class Statistics:
         self.screen.blit(tree_height_text, (10, 210))
         self.screen.blit(human_text, (10, 230))
         self.screen.blit(human_hunger_text, (10, 250))
-        self.screen.blit(storage_house_text, (10, 270))
-        self.screen.blit(storage_house_wood_text, (10, 290))
-        self.screen.blit(storage_house_food_text, (10, 310))
+        self.screen.blit(house_text, (10, 270))
+        self.screen.blit(house_wood_text, (10, 290))
+        self.screen.blit(house_food_text, (10, 310))
         
         self.screen.blit(season_progression_text, (1000, 10))
 

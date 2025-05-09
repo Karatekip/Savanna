@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 class House(pygame.sprite.Sprite):
-    def __init__(self, screen_x, screen_y, screen, human_spawn_pos, house_kind, storage_house_group):
+    def __init__(self, screen_x, screen_y, screen, human_spawn_pos, house_kind, house_group):
         super().__init__()
         self.screen_x = screen_x
         self.screen_y = screen_y
@@ -102,13 +102,13 @@ class House(pygame.sprite.Sprite):
             
 
         self.human_spawn_pos = human_spawn_pos
-        self.storage_house_group = storage_house_group
+        self.house_group = house_group
         if house_kind == 'church':
             self.x_pos, self.y_pos = self.human_spawn_pos
         elif house_kind == 'wood_storage':
-            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.storage_house_group)
+            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.house_group)
         elif house_kind == 'food_storage':
-            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.storage_house_group)
+            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.house_group)
         self.rect = self.image.get_rect()
         self.rect.center = (self.x_pos, self.y_pos)
         if house_kind == 'church':
@@ -156,15 +156,15 @@ class House(pygame.sprite.Sprite):
 
         return None
 
-    def update(self, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, storage_house_group):
+    def update(self, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, house_group):
         if tot_wood_storage >= tot_wood_storage_max:
             house_kind = "wood_storage"
-            new_storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, storage_house_group)
-            storage_house_group.add(new_storage_house)
+            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group)
+            house_group.add(new_house)
         if tot_food_storage >= tot_food_storage_max:
             house_kind = "food_storage"
-            new_storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, storage_house_group)
-            storage_house_group.add(new_storage_house)
+            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group)
+            house_group.add(new_house)
         
 
     def draw(self):

@@ -1,6 +1,7 @@
 import pygame
 import random
 from world.trees import Tree
+from world.grass import Grass
 from entities.giraffe import Giraffe
 from entities.lions import Lion
 from world.statistics import Statistics
@@ -19,6 +20,7 @@ class Simulation:
         self.clock = pygame.time.Clock()
         self.FPS = 60
         self.initial_trees = 40
+        self.initial_grass = 20
         self.initial_giraffes = 20
         self.initial_lions = 4
         self.initial_humans = 3
@@ -30,6 +32,11 @@ class Simulation:
             tree = Tree(self.screen_x, self.screen_y, self.screen)
             self.tree_group.add(tree)
 
+        self.grass_group = pygame.sprite.Group()
+        for i in range(self.initial_grass):
+            grass = Grass(self.screen_x, self.screen_y, self.screen)
+            self.grass_group.add(grass)
+
         self.giraffe_group = pygame.sprite.Group()
         for i in range(self.initial_giraffes):
             giraffe = Giraffe(screen_x, screen_y, screen)
@@ -40,7 +47,6 @@ class Simulation:
             lion = Lion(screen_x, screen_y, screen)
             self.lion_group.add(lion)
         
-        #self.house_group = pygame.sprite.Group()
             
 
 
@@ -48,13 +54,12 @@ class Simulation:
         self.human_spawn_y_pos = random.randint(50, screen_y - 50)
         self.human_spawn_pos = (self.human_spawn_x_pos, self.human_spawn_y_pos)
 
-        #self.storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos)
 
-        self.storage_house_group = pygame.sprite.Group()
+        self.house_group = pygame.sprite.Group()
         house_kind = 'church'
         for i in range(1):
-            storage_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, self.storage_house_group)
-            self.storage_house_group.add(storage_house)
+            house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, self.house_group)
+            self.house_group.add(house)
         
 
 
@@ -115,7 +120,11 @@ class Simulation:
 
         #Trees
         for tree in self.tree_group:
-            tree.update(self.tree_group, self.season)
+            tree.update(self.tree_group, self.season, self.grass_group, self.house_group)
+
+        #Grass
+        for grass in self.grass_group:
+            grass.update(self.grass_group, self.season, self.tree_group, self.house_group)
 
         #Giraffes
         for giraffe in self.giraffe_group:
@@ -131,26 +140,26 @@ class Simulation:
         self.tot_wood_storage = 0
         self.tot_food_storage_max = 0
         self.tot_wood_storage_max = 0
-        for storage_house in self.storage_house_group:
-            self.tot_food_storage += storage_house.food_storage
-            self.tot_wood_storage += storage_house.wood_storage
-            self.tot_food_storage_max += storage_house.food_storage_max
-            self.tot_wood_storage_max += storage_house.wood_storage_max
+        for house in self.house_group:
+            self.tot_food_storage += house.food_storage
+            self.tot_wood_storage += house.wood_storage
+            self.tot_food_storage_max += house.food_storage_max
+            self.tot_wood_storage_max += house.wood_storage_max
 
-        for storage_house in self.storage_house_group:
-            storage_house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.storage_house_group)
+        for house in self.house_group:
+            house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.house_group)
 
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.human_group, self.storage_house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
+            human.update(self.tree_group, self.human_group, self.house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
 
         
 
         
         
         #Statistics
-        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.storage_house_group, self.season, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
+        self.stats.update(self.giraffe_group, self.tree_group, self.lion_group, self.human_group, self.house_group, self.season, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
 
        
 
@@ -160,13 +169,22 @@ class Simulation:
         #draw background based on season
         self.season.draw(self.screen)
 
-        #houses
-        for storage_house in self.storage_house_group:
-            storage_house.draw()
         
+        
+        
+
+        #grass
+        for grass in self.grass_group:
+            grass.draw()
+
         #trees
         for tree in self.tree_group:
             tree.draw()
+
+        #houses
+        for house in self.house_group:
+            house.draw()
+
         #giraffes
         for giraffe in self.giraffe_group:
             giraffe.draw()

@@ -51,9 +51,9 @@ class Human(pygame.sprite.Sprite):
         self.time_to_build_storage = 1000
 
     
-    def update(self, tree_group, humans_group, storage_house_group, giraffe_group, House, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max):
+    def update(self, tree_group, humans_group, house_group, giraffe_group, House, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max):
         
-        closest_storage_house = min(storage_house_group, key=lambda storage_house: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(storage_house.rect.center)))
+        closest_house = min(house_group, key=lambda house: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(house.rect.center)))
         self.x_pos = float(self.rect.centerx)
         self.y_pos = float(self.rect.centery)
         
@@ -65,6 +65,10 @@ class Human(pygame.sprite.Sprite):
             self.die()
         if self.hunger > 90:
             self.mission = "home"
+        
+        self.age += 1
+        if self.age > 8000:
+            self.die()
 
 
 
@@ -148,15 +152,15 @@ class Human(pygame.sprite.Sprite):
             else:
                 # Optionally play animation / sound
                 #print("Human returned home at", self.rect.center)
-                self.eat_from_storage(closest_storage_house)
+                self.eat_from_storage(closest_house)
                 self.mission = "logging"
 
                 if self.caught_giraffe:
-                    closest_storage_house.food_storage += 20
+                    closest_house.food_storage += 20
                     self.caught_giraffe = False
 
                 if self.caught_wood:
-                    closest_storage_house.wood_storage += 20
+                    closest_house.wood_storage += 20
                     self.caught_wood = False
 
 
@@ -191,18 +195,19 @@ class Human(pygame.sprite.Sprite):
                     self.mission = "home"
                     closest_human_to_breed.mission = "home"
 
+        # age
     
-    def eat_from_storage(self, storage_house):
+    def eat_from_storage(self, house):
         if self.hunger > 10:
             self.food_proportion = self.hunger
         else:
             self.food_proportion = 5
 
-        if storage_house.food_storage >= self.food_proportion:
+        if house.food_storage >= self.food_proportion:
             self.hunger -= self.food_proportion
             if self.hunger < 0:
                 self.hunger = 0
-            storage_house.food_storage -= self.food_proportion
+            house.food_storage -= self.food_proportion
 
     def die(self):
         print("Human died of hunger.")
