@@ -2,11 +2,13 @@ import pygame
 import random
 from world.trees import Tree
 from world.grass import Grass
+from world.grass import Wind
 from entities.giraffe import Giraffe
 from entities.lions import Lion
 from world.statistics import Statistics
 from entities.humans.humans import Human
 from entities.humans.houses import House
+from entities.humans.fields import Field
 from world.seasons import Season
 from world.rain import Raindrop
 from world.rain import Rain
@@ -36,6 +38,12 @@ class Simulation:
         for i in range(self.initial_grass):
             grass = Grass(self.screen_x, self.screen_y, self.screen)
             self.grass_group.add(grass)
+        self.wind_group = pygame.sprite.Group()
+        for i in range(5):
+            wind = Wind(self.screen_x, self.screen_y, self.screen)
+            self.wind_group.add(wind)
+
+
 
         self.giraffe_group = pygame.sprite.Group()
         for i in range(self.initial_giraffes):
@@ -54,19 +62,27 @@ class Simulation:
         self.human_spawn_y_pos = random.randint(50, screen_y - 50)
         self.human_spawn_pos = (self.human_spawn_x_pos, self.human_spawn_y_pos)
 
+        self.field_group = pygame.sprite.Group()
+        for i in range(0):
+            field = Field(self.screen_x -20, self.screen_y -20, self.screen)
+            self.field_group.add(field)
 
+            
         self.house_group = pygame.sprite.Group()
         house_kind = 'church'
         for i in range(1):
-            house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, self.house_group)
+            house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, self.house_group, self.field_group)
             self.house_group.add(house)
         
 
 
         self.human_group = pygame.sprite.Group()
         for i in range(self.initial_humans):
-            human = Human(screen_x, screen_y, screen, self.human_spawn_pos)
+            human = Human(screen_x, screen_y, screen, self.human_spawn_pos, self.human_group)
             self.human_group.add(human)
+
+        
+
 
         
 
@@ -124,7 +140,11 @@ class Simulation:
 
         #Grass
         for grass in self.grass_group:
-            grass.update(self.grass_group, self.season, self.tree_group, self.house_group)
+            grass.update(self.grass_group, self.season, self.tree_group, self.house_group, self.wind_group)
+
+        for wind_wave in self.wind_group:
+            wind_wave.update()
+
 
         #Giraffes
         for giraffe in self.giraffe_group:
@@ -147,15 +167,18 @@ class Simulation:
             self.tot_wood_storage_max += house.wood_storage_max
 
         for house in self.house_group:
-            house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.house_group)
+            house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.house_group, self.field_group)
 
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.human_group, self.house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max)
+            human.update(self.tree_group, self.human_group, self.house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.field_group, Field)
+
+        #Fields
+        for field in self.field_group:
+            field.update(self.season.season)
 
         
-
         
         
         #Statistics
@@ -170,12 +193,12 @@ class Simulation:
         self.season.draw(self.screen)
 
         
-        
-        
-
         #grass
         for grass in self.grass_group:
             grass.draw()
+
+        for wind_wave in self.wind_group:
+            wind_wave.draw()
 
         #trees
         for tree in self.tree_group:
@@ -198,6 +221,10 @@ class Simulation:
         #humans
         for human in self.human_group:
             human.draw()
+
+        #fields
+        for field in self.field_group:
+            field.draw()
 
         '''
         for drop in Rain.raindrops:

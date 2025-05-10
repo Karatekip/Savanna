@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 class House(pygame.sprite.Sprite):
-    def __init__(self, screen_x, screen_y, screen, human_spawn_pos, house_kind, house_group):
+    def __init__(self, screen_x, screen_y, screen, human_spawn_pos, house_kind, house_group, field_group):
         super().__init__()
         self.screen_x = screen_x
         self.screen_y = screen_y
@@ -106,9 +106,9 @@ class House(pygame.sprite.Sprite):
         if house_kind == 'church':
             self.x_pos, self.y_pos = self.human_spawn_pos
         elif house_kind == 'wood_storage':
-            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.house_group)
+            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.house_group, field_group)
         elif house_kind == 'food_storage':
-            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.house_group)
+            self.x_pos, self.y_pos = self.get_spawn_near(human_spawn_pos, self.house_group, field_group)
         self.rect = self.image.get_rect()
         self.rect.center = (self.x_pos, self.y_pos)
         if house_kind == 'church':
@@ -118,7 +118,7 @@ class House(pygame.sprite.Sprite):
             self.wood_storage_max = 30
         elif house_kind == 'food_storage':
             self.food_storage = 0
-            self.food_storage_max = 30
+            self.food_storage_max = 60
             self.wood_storage = 0
             self.wood_storage_max = 0
         elif house_kind == 'wood_storage':
@@ -128,7 +128,7 @@ class House(pygame.sprite.Sprite):
             self.wood_storage_max = 100
 
 
-    def get_spawn_near(self, village_center, existing_houses, max_attempts=1000):
+    def get_spawn_near(self, village_center, existing_houses, field_group, max_attempts=1000):
         base_radius = 50
         step_radius = 20
         angle_step = 90 
@@ -151,19 +151,20 @@ class House(pygame.sprite.Sprite):
 
                 # Check for overlaps and if in screen
                 if 0 <= new_x <= self.screen_x and 0 <= new_y <= self.screen_y:
-                    if not any(h.rect.colliderect(test_rect) for h in existing_houses):
+                    if not any(h.rect.colliderect(test_rect) for h in existing_houses) and \
+                        not any(f.rect.colliderect(test_rect) for f in field_group):
                         return (new_x, new_y)
 
         return None
 
-    def update(self, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, house_group):
+    def update(self, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, house_group, field_group):
         if tot_wood_storage >= tot_wood_storage_max:
             house_kind = "wood_storage"
-            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group)
+            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group, field_group)
             house_group.add(new_house)
         if tot_food_storage >= tot_food_storage_max:
             house_kind = "food_storage"
-            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group)
+            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group, field_group)
             house_group.add(new_house)
         
 
