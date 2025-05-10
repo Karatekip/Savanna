@@ -166,6 +166,16 @@ class Simulation:
             self.tot_food_storage_max += house.food_storage_max
             self.tot_wood_storage_max += house.wood_storage_max
 
+        # Build one storage house if needed
+        if self.tot_wood_storage >= self.tot_wood_storage_max:
+            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, "wood_storage", self.house_group, self.field_group)
+            self.house_group.add(new_house)
+        
+        elif self.tot_food_storage >= self.tot_food_storage_max:
+            new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, "food_storage", self.house_group, self.field_group)
+            self.house_group.add(new_house)
+
+
         for house in self.house_group:
             house.update(self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.house_group, self.field_group)
 

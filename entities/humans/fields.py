@@ -13,7 +13,7 @@ class Field(pygame.sprite.Sprite):
         self.color = self.color_growing
 
         self.growth_time = 0
-        self.max_growth_time = random.randint(300, 600)  # ~10 seconds at 60fps
+        self.max_growth_time = random.randint(1500,3200)  # ~10 seconds at 60fps
         self.ready = False
 
     def update(self, season):

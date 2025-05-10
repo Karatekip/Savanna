@@ -158,6 +158,7 @@ class House(pygame.sprite.Sprite):
         return None
 
     def update(self, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, house_group, field_group):
+        '''
         if tot_wood_storage >= tot_wood_storage_max:
             house_kind = "wood_storage"
             new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group, field_group)
@@ -166,7 +167,8 @@ class House(pygame.sprite.Sprite):
             house_kind = "food_storage"
             new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, house_kind, house_group, field_group)
             house_group.add(new_house)
-        
+        '''
+        pass
 
     def draw(self):
         self.screen.blit(self.image, self.rect)

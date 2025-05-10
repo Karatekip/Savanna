@@ -6,6 +6,7 @@ class Human(pygame.sprite.Sprite):
     def __init__(self, screen_x, screen_y, screen, human_spawn_pos, human_group):
 
         super().__init__()
+        self.font = pygame.font.SysFont(None, 14)
         self.screen_x = screen_x
         self.screen_y = screen_y
         self.screen = screen
@@ -15,11 +16,20 @@ class Human(pygame.sprite.Sprite):
         self.width, self.height = 10, 20
         self.age = 0
         self.max_age = random.randint(5000, 10000)
-        self.human_kind = random.choice(['hunter', 'logger', 'farmer'])
+        
         if len(human_group) == 0:
             self.human_kind = 'logger'
         elif len(human_group) == 1:
             self.human_kind = 'farmer'
+        else:
+            farmer_amount = 0
+            for human in human_group:
+                if human.human_kind == 'farmer':
+                    farmer_amount += 1
+            if farmer_amount <= 3:
+                self.human_kind = random.choice(['hunter', 'logger', 'farmer'])
+            else:
+                self.human_kind = random.choice(['hunter', 'logger'])
 
         if self.human_kind == 'farmer':
             self.color = (255, 220, 177)
@@ -120,7 +130,7 @@ class Human(pygame.sprite.Sprite):
     
                 else:
                     if self.got_food:
-                        main_house.food_storage += 20
+                        main_house.food_storage += 10
 
                     self.mission = "farming"
                     self.eat_from_storage(main_house)
@@ -267,7 +277,7 @@ class Human(pygame.sprite.Sprite):
     
     
         # breeding
-        self.breed_timer += 3
+        self.breed_timer += 1
         if self.breed_timer > self.breed_timer_interval:
             old_mission = self.mission
             self.mission = "breed"
@@ -345,3 +355,10 @@ class Human(pygame.sprite.Sprite):
             pygame.draw.line(self.image, (105, 105, 105), (8, 12), (10, 18), 6)  # Spear
 
         
+        #stats
+        
+        stats = f"Age:{int(self.age // 111)}/{int(self.max_age // 111)} | Hunger:{int(self.hunger)}"
+        text_surface = self.font.render(stats, True, (255, 255, 255))
+        text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.bottom + 2))
+        #text_rect.midtop = (self.rect.centerx, self.rect.bottom + 2)
+        self.screen.blit(text_surface, text_rect)
