@@ -1,11 +1,5 @@
 import pygame
-from world.trees import Tree
-from entities.giraffe import Giraffe
-from entities.lions import Lion
-from entities.humans.humans import Human
-from entities.humans.houses import House
-from world.seasons import Season
-#from world.simulation import Simulation
+
 
 class Statistics:
     def __init__(self, screen):

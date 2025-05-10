@@ -1,6 +1,6 @@
 import pygame
 import random
-from entities.giraffe import Giraffe
+from entities.giraffes import Giraffe
 from world.seasons import Season
 
 class Lion(pygame.sprite.Sprite):

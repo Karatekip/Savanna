@@ -39,6 +39,8 @@ class Giraffe(pygame.sprite.Sprite):
         self.eat_nead = random.randint(10, 30)  # Hunger level needed to eat
         self.comment = f"New baby giraffe"
 
+        self.sick = False
+
     
     def update(self, tree_group, giraffe_group, season):
         #movement
@@ -71,7 +73,7 @@ class Giraffe(pygame.sprite.Sprite):
 
         #eating tree
         for tree in list(tree_group):
-            if self.rect.colliderect(tree.rect):
+            if self.rect.colliderect(tree.rect) and self.sick == False:
                 if self.neck_length >= tree.height and self.hunger >= self.eat_nead:
                     tree_group.remove(tree)
                     self.hunger -= 50
@@ -104,6 +106,11 @@ class Giraffe(pygame.sprite.Sprite):
         if self.age > self.max_age:
             self.die("Giraffe has died of old age.")
             print(f"Giraffe at {self.rect.center} has died of old age.")
+
+    def set_color(self, new_color):
+        self.color = new_color
+        pygame.draw.rect(self.image, self.color, (0, 0, self.width, self.height))
+
 
     def die(self, comment=None):
         self.kill()

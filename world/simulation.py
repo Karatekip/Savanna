@@ -3,7 +3,7 @@ import random
 from world.trees import Tree
 from world.grass import Grass
 from world.grass import Wind
-from entities.giraffe import Giraffe
+from entities.giraffes import Giraffe
 from entities.lions import Lion
 from world.statistics import Statistics
 from entities.humans.humans import Human
@@ -12,6 +12,7 @@ from entities.humans.fields import Field
 from world.seasons import Season
 from world.rain import Raindrop
 from world.rain import Rain
+from world.hapenings.disease import Disease
 
 class Simulation:
     def __init__(self, screen, screen_x, screen_y):
@@ -82,7 +83,7 @@ class Simulation:
             self.human_group.add(human)
 
         
-
+        self.disease = Disease()
 
         
 
@@ -191,11 +192,14 @@ class Simulation:
 
         #Humans
         for human in self.human_group:
-            human.update(self.tree_group, self.human_group, self.house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.field_group, Field)
+            human.update(self.tree_group, self.human_group, self.house_group, self.giraffe_group, House, self.tot_food_storage, self.tot_wood_storage, self.tot_food_storage_max, self.tot_wood_storage_max, self.field_group, Field, self.lion_group)
 
         #Fields
         for field in self.field_group:
             field.update(self.season.season)
+
+        #disease
+        self.disease.update(self.giraffe_group)
 
         
         

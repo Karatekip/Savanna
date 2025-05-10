@@ -86,7 +86,7 @@ class Human(pygame.sprite.Sprite):
         self.speed = 1.5
         self.hunger_speed = 0.01
         self.food_proportion = 5
-        self.caught_giraffe = False
+        self.caught_animal = False
         self.caught_wood = False
         
         self.build_storage_timer = 0
@@ -96,7 +96,7 @@ class Human(pygame.sprite.Sprite):
         self.got_food = False
 
     
-    def update(self, tree_group, humans_group, house_group, giraffe_group, House, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, field_group, Field):
+    def update(self, tree_group, humans_group, house_group, giraffe_group, House, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, field_group, Field, lions_group):
 
         # hunger
         self.hunger += self.hunger_speed
@@ -212,37 +212,23 @@ class Human(pygame.sprite.Sprite):
                 else:
                     self.eat_from_storage(main_house)
                     self.mission = "hunt"
-                    if self.caught_giraffe:
+                    if self.caught_animal:
                         main_house.food_storage += 20
-                        self.caught_giraffe = False
+                        self.caught_animal = False
 
             if self.mission == "hunt" or tot_food_storage <= 25:
                 self.mission = "hunt"
                 if len(giraffe_group) < 25 and tot_food_storage >= 25:
                     return
-                if self.caught_giraffe:
+                if self.caught_animal:
                     self.mission = "home"
                     return
                 
-                closest_giraffe = min(giraffe_group, key=lambda giraffe: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(giraffe.rect.center)))
-                target_x, target_y = closest_giraffe.rect.center
-    
-                dx = target_x - self.rect.centerx
-                dy = target_y - self.rect.centery
-                distance = (dx ** 2 + dy ** 2) ** 0.5
-    
-                if distance > 1:
-                    self.x_pos += self.speed * dx / distance
-                    self.y_pos += self.speed * dy / distance
-                    self.rect.center = (int(self.x_pos), int(self.y_pos))
-    
                 
-                if self.rect.colliderect(closest_giraffe.rect):
-                    giraffe_group.remove(closest_giraffe)
-                    #print("Giraffe hunted by human at", self.rect.center)
-                    self.mission = "home"
-                    self.caught_giraffe = True
-                    self.hunger += 2
+
+                closest_giraffe = min(giraffe_group, key=lambda giraffe: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(giraffe.rect.center)))
+                self.hunt(closest_giraffe, giraffe_group)
+                
 
         #if not farmer or hunter
         else:
@@ -250,7 +236,7 @@ class Human(pygame.sprite.Sprite):
     
     
             #Chaising
-            if tot_food_storage <= (self.food_proportion * len(humans_group)) and self.caught_giraffe == False:
+            if tot_food_storage <= (self.food_proportion * len(humans_group)) and self.caught_animal == False:
                 self.mission = "hunt"
             
             
@@ -275,7 +261,7 @@ class Human(pygame.sprite.Sprite):
                     giraffe_group.remove(closest_giraffe)
                     #print("Giraffe hunted by human at", self.rect.center)
                     self.mission = "home"
-                    self.caught_giraffe = True
+                    self.caught_animal = True
                     self.hunger += 2
                     
     
@@ -332,9 +318,9 @@ class Human(pygame.sprite.Sprite):
                     self.eat_from_storage(main_house)
                     self.mission = "logging"
     
-                    if self.caught_giraffe:
+                    if self.caught_animal:
                         main_house.food_storage += 20
-                        self.caught_giraffe = False
+                        self.caught_animal = False
     
                     if self.caught_wood:
                         main_house.wood_storage += 20
@@ -343,8 +329,10 @@ class Human(pygame.sprite.Sprite):
     
     
         # breeding
+        if len(humans_group) < 3:
+            self.breed_timer = self.breed_timer_interval 
         self.breed_timer += 1
-        if self.breed_timer > self.breed_timer_interval:
+        if self.breed_timer >= self.breed_timer_interval:
             old_mission = self.mission
             self.mission = "breed"
             self.head_color = (255, 140, 140)
@@ -378,9 +366,33 @@ class Human(pygame.sprite.Sprite):
                     self.image.fill((0, 0, 0, 0))
                     pygame.draw.circle(self.image, self.head_color, (self.width // 2, 5), 4)  # Head
                     pygame.draw.rect(self.image, self.color, (2, 8, 6, 12))
-                    
+
 
         
+        # handel lions in village
+        closest_lion_to_village = min(lions_group, key=lambda lion: pygame.math.Vector2(main_house.rect.center).distance_to(pygame.math.Vector2(lion.rect.center)))
+        for house in house_group:
+            if closest_lion_to_village.rect.colliderect(house.rect):
+                self.hunt(closest_lion_to_village, lions_group)
+            
+        
+    def hunt(self, target_animal, animal_group):
+        target_x, target_y = target_animal.rect.center
+    
+        dx = target_x - self.rect.centerx
+        dy = target_y - self.rect.centery
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+        if distance > 1:
+            self.x_pos += self.speed * dx / distance
+            self.y_pos += self.speed * dy / distance
+            self.rect.center = (int(self.x_pos), int(self.y_pos))
+        
+        if self.rect.colliderect(target_animal.rect):
+            target_animal.die()
+            self.mission = "home"
+            self.caught_animal = True
+            self.hunger += 2
+
     def redraw(self):
             self.image.fill((0, 0, 0, 0))
             pygame.draw.circle(self.image, self.head_color, (self.width // 2, 5), 4)
