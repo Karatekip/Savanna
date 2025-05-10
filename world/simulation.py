@@ -25,7 +25,7 @@ class Simulation:
         self.initial_grass = 20
         self.initial_giraffes = 20
         self.initial_lions = 4
-        self.initial_humans = 3
+        self.initial_humans = 4
 
         self.season = Season(self.screen_x, self.screen_y, self.screen)
 
@@ -78,7 +78,7 @@ class Simulation:
 
         self.human_group = pygame.sprite.Group()
         for i in range(self.initial_humans):
-            human = Human(screen_x, screen_y, screen, self.human_spawn_pos, self.human_group)
+            human = Human(screen_x, screen_y, screen, self.human_spawn_pos, self.human_group, self.giraffe_group)
             self.human_group.add(human)
 
         
@@ -127,6 +127,15 @@ class Simulation:
                                 lion.kill()
                                 self.player_playing = False
                                 break
+                #control fps with + an -
+                if event.key == pygame.K_l:
+                    self.FPS += 10
+                if event.key == pygame.K_j:
+                    self.FPS -= 10
+                    if self.FPS < 1:
+                        self.FPS = 1
+                print("FPS: ", self.FPS)
+
     
     def update(self):
         #season
@@ -170,7 +179,7 @@ class Simulation:
         if self.tot_wood_storage >= self.tot_wood_storage_max:
             new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, "wood_storage", self.house_group, self.field_group)
             self.house_group.add(new_house)
-        
+
         elif self.tot_food_storage >= self.tot_food_storage_max:
             new_house = House(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, "food_storage", self.house_group, self.field_group)
             self.house_group.add(new_house)
@@ -226,15 +235,15 @@ class Simulation:
         for lion in self.lion_group:
             lion.draw()
 
-        
+        #fields
+        for field in self.field_group:
+            field.draw()    
 
         #humans
         for human in self.human_group:
             human.draw()
 
-        #fields
-        for field in self.field_group:
-            field.draw()
+        
 
         '''
         for drop in Rain.raindrops:

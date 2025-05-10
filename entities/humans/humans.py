@@ -3,7 +3,7 @@ import random
 from entities.humans.houses import House
 
 class Human(pygame.sprite.Sprite):
-    def __init__(self, screen_x, screen_y, screen, human_spawn_pos, human_group):
+    def __init__(self, screen_x, screen_y, screen, human_spawn_pos, human_group, giraffe_group):
 
         super().__init__()
         self.font = pygame.font.SysFont(None, 14)
@@ -21,22 +21,40 @@ class Human(pygame.sprite.Sprite):
             self.human_kind = 'logger'
         elif len(human_group) == 1:
             self.human_kind = 'farmer'
+        elif len(human_group) == 2:
+            self.human_kind = 'hunter'
         else:
             farmer_amount = 0
+            hunter_amount = 0
             for human in human_group:
                 if human.human_kind == 'farmer':
                     farmer_amount += 1
+                elif human.human_kind == 'hunter':
+                    hunter_amount += 1
+
+            available_jobs = ['logger']
             if farmer_amount <= 3:
-                self.human_kind = random.choice(['hunter', 'logger', 'farmer'])
+                available_jobs.append('farmer')
+            if hunter_amount <= 2:
+                available_jobs.append('hunter')
+            if len(giraffe_group) > hunter_amount * 2:
+                self.human_kind = 'hunter'
+            elif farmer_amount < 1:
+                self.human_kind = 'farmer'
             else:
-                self.human_kind = random.choice(['hunter', 'logger'])
+                self.human_kind = random.choice(available_jobs)
+            
 
         if self.human_kind == 'farmer':
-            self.color = (255, 220, 177)
+            self.color = (140, 180, 75)
             self.mission = "farming"
+        elif self.human_kind == 'hunter':
+            self.color = (90, 70, 50)
+            self.mission = "hunt"
         else:
-            self.color = (51, 25, 0)
+            self.color = (100, 50, 20)
             self.mission = "logging"
+
 
         self.generation = 1
 
@@ -177,8 +195,56 @@ class Human(pygame.sprite.Sprite):
                         
 
 
+        elif self.human_kind == 'hunter':
+            if self.mission == "home":
+                target_x, target_y = self.human_spawn_pos
+    
+                dx = target_x - self.rect.centerx
+                dy = target_y - self.rect.centery
+                distance = (dx ** 2 + dy ** 2) ** 0.5
+    
+                if distance > 1:
+                    self.x_pos += self.speed * dx / distance
+                    self.y_pos += self.speed * dy / distance
+                    self.rect.center = (int(self.x_pos), int(self.y_pos))
+    
+    
+                else:
+                    self.eat_from_storage(main_house)
+                    self.mission = "hunt"
+                    if self.caught_giraffe:
+                        main_house.food_storage += 20
+                        self.caught_giraffe = False
 
-        #if not farmer
+            if self.mission == "hunt" or tot_food_storage <= 25:
+                self.mission = "hunt"
+                if len(giraffe_group) < 25 and tot_food_storage >= 25:
+                    return
+                if self.caught_giraffe:
+                    self.mission = "home"
+                    return
+                
+                closest_giraffe = min(giraffe_group, key=lambda giraffe: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(giraffe.rect.center)))
+                target_x, target_y = closest_giraffe.rect.center
+    
+                dx = target_x - self.rect.centerx
+                dy = target_y - self.rect.centery
+                distance = (dx ** 2 + dy ** 2) ** 0.5
+    
+                if distance > 1:
+                    self.x_pos += self.speed * dx / distance
+                    self.y_pos += self.speed * dy / distance
+                    self.rect.center = (int(self.x_pos), int(self.y_pos))
+    
+                
+                if self.rect.colliderect(closest_giraffe.rect):
+                    giraffe_group.remove(closest_giraffe)
+                    #print("Giraffe hunted by human at", self.rect.center)
+                    self.mission = "home"
+                    self.caught_giraffe = True
+                    self.hunger += 2
+
+        #if not farmer or hunter
         else:
             
     
@@ -303,7 +369,7 @@ class Human(pygame.sprite.Sprite):
                 else:
                     self.breed_timer = 0
                     closest_human_to_breed.breed_timer = 0
-                    baby_human = Human(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, humans_group)
+                    baby_human = Human(self.screen_x, self.screen_y, self.screen, self.human_spawn_pos, humans_group, giraffe_group)
                     humans_group.add(baby_human)
                     baby_human.rect.center = self.rect.center
                     self.mission = "home"

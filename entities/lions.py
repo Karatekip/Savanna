@@ -40,7 +40,7 @@ class Lion(pygame.sprite.Sprite):
         self.x_dir = random.choice([-1, 1]) * self.speed
         self.y_dir = random.choice([-1, 1]) * self.speed
 
-        self.eat_nead = random.randint(0, 500)
+        #self.eat_nead = random.randint(0, 500)
 
         self.max_breed_attempts = 3
         self.breed_attempts = 0
@@ -119,7 +119,7 @@ class Lion(pygame.sprite.Sprite):
             self.rect.y += self.y_dir
 
         #hunger
-        self.hunger += 0.015
+        self.hunger += 0.02
         if self.hunger > 100:
             self.die("Lion died of hunger.")
             print(f"Lion at {self.rect.center} has died of hunger.")

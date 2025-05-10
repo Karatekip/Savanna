@@ -36,7 +36,7 @@ class Giraffe(pygame.sprite.Sprite):
         self.breed_timer = 0 #random.randint(0, 3000)
         self.breed_timer_interval = random.randint(500, 1000)  # Time before next breed attempt
 
-        self.eat_nead = random.randint(0, 200)  # Hunger level needed to eat
+        self.eat_nead = random.randint(10, 30)  # Hunger level needed to eat
         self.comment = f"New baby giraffe"
 
     
@@ -68,7 +68,6 @@ class Giraffe(pygame.sprite.Sprite):
         self.hunger += 0.015
         if self.hunger > 100:
             self.die("Giraffe died of hunger.")
-            print(f"Giraffe at {self.rect.center} has died of hunger.")
 
         #eating tree
         for tree in list(tree_group):
