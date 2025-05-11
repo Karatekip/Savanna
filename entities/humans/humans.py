@@ -52,7 +52,7 @@ class Human(pygame.sprite.Sprite):
             self.color = (90, 70, 50)
             self.mission = "hunt"
         else:
-            self.color = (100, 50, 20)
+            self.color = (200, 100, 50)
             self.mission = "logging"
 
 
@@ -93,7 +93,7 @@ class Human(pygame.sprite.Sprite):
         self.time_to_build_storage = 1000
 
         self.field_to_harvest = None
-        self.got_food = False
+        self.caught_weed = False
 
     
     def update(self, tree_group, humans_group, house_group, giraffe_group, House, tot_food_storage, tot_wood_storage, tot_food_storage_max, tot_wood_storage_max, field_group, Field, lions_group):
@@ -134,24 +134,7 @@ class Human(pygame.sprite.Sprite):
             #home
             if self.mission == "home":
                 
-                target_x, target_y = self.human_spawn_pos
-    
-                dx = target_x - self.rect.centerx
-                dy = target_y - self.rect.centery
-                distance = (dx ** 2 + dy ** 2) ** 0.5
-    
-                if distance > 1:
-                    self.x_pos += self.speed * dx / distance
-                    self.y_pos += self.speed * dy / distance
-                    self.rect.center = (int(self.x_pos), int(self.y_pos))
-    
-    
-                else:
-                    if self.got_food:
-                        main_house.food_storage += 10
-
-                    self.mission = "farming"
-                    self.eat_from_storage(main_house)
+                self.returning_home(main_house)
             
             #farming
             if self.mission == "farming":
@@ -174,7 +157,7 @@ class Human(pygame.sprite.Sprite):
                             field_group.remove(self.field_to_harvest)
                             self.field_to_harvest = None
                             self.mission = "home"
-                            self.got_food = True
+                            self.caught_weed = True
                             self.hunger += 2
 
                     
@@ -197,6 +180,7 @@ class Human(pygame.sprite.Sprite):
 
         elif self.human_kind == 'hunter':
             if self.mission == "home":
+                #self.returning_home()
                 target_x, target_y = self.human_spawn_pos
     
                 dx = target_x - self.rect.centerx
@@ -245,25 +229,7 @@ class Human(pygame.sprite.Sprite):
                     return
                 
                 closest_giraffe = min(giraffe_group, key=lambda giraffe: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(giraffe.rect.center)))
-                target_x, target_y = closest_giraffe.rect.center
-    
-                dx = target_x - self.rect.centerx
-                dy = target_y - self.rect.centery
-                distance = (dx ** 2 + dy ** 2) ** 0.5
-    
-                if distance > 1:
-                    self.x_pos += self.speed * dx / distance
-                    self.y_pos += self.speed * dy / distance
-                    self.rect.center = (int(self.x_pos), int(self.y_pos))
-    
-                
-                if self.rect.colliderect(closest_giraffe.rect):
-                    giraffe_group.remove(closest_giraffe)
-                    #print("Giraffe hunted by human at", self.rect.center)
-                    self.mission = "home"
-                    self.caught_animal = True
-                    self.hunger += 2
-                    
+                self.hunt(closest_giraffe, giraffe_group)
     
                 
     
@@ -300,31 +266,7 @@ class Human(pygame.sprite.Sprite):
             # going home
             if self.mission == "home":
                 
-                target_x, target_y = self.human_spawn_pos
-    
-                dx = target_x - self.rect.centerx
-                dy = target_y - self.rect.centery
-                distance = (dx ** 2 + dy ** 2) ** 0.5
-    
-                if distance > 1:
-                    self.x_pos += self.speed * dx / distance
-                    self.y_pos += self.speed * dy / distance
-                    self.rect.center = (int(self.x_pos), int(self.y_pos))
-    
-    
-                else:
-                    # Optionally play animation / sound
-                    #print("Human returned home at", self.rect.center)
-                    self.eat_from_storage(main_house)
-                    self.mission = "logging"
-    
-                    if self.caught_animal:
-                        main_house.food_storage += 20
-                        self.caught_animal = False
-    
-                    if self.caught_wood:
-                        main_house.wood_storage += 20
-                        self.caught_wood = False
+                self.returning_home(main_house)
     
     
     
@@ -375,6 +317,37 @@ class Human(pygame.sprite.Sprite):
             if closest_lion_to_village.rect.colliderect(house.rect):
                 self.hunt(closest_lion_to_village, lions_group)
             
+
+    def returning_home(self, main_house):
+        target_x, target_y = self.human_spawn_pos
+    
+        dx = target_x - self.rect.centerx
+        dy = target_y - self.rect.centery
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+        if distance > 1:
+            self.x_pos += self.speed * dx / distance
+            self.y_pos += self.speed * dy / distance
+            self.rect.center = (int(self.x_pos), int(self.y_pos))
+        else:
+            # Optionally play animation / sound
+            #print("Human returned home at", self.rect.center)
+            self.eat_from_storage(main_house)
+            if self.human_kind == 'farmer':
+                self.mission = 'farming'
+            elif self.human_kind == 'hunter':
+                self.mission = 'hunt'
+            else:
+                self.mission = "logging"
+    
+            if self.caught_animal:
+                main_house.food_storage += 20
+                self.caught_animal = False
+            if self.caught_wood:
+                main_house.wood_storage += 20
+                self.caught_wood = False
+            if self.caught_weed:
+                main_house.food_storage += 10
+                self.caught_weed = False
         
     def hunt(self, target_animal, animal_group):
         target_x, target_y = target_animal.rect.center
@@ -392,6 +365,8 @@ class Human(pygame.sprite.Sprite):
             self.mission = "home"
             self.caught_animal = True
             self.hunger += 2
+
+        
 
     def redraw(self):
             self.image.fill((0, 0, 0, 0))

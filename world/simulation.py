@@ -5,6 +5,7 @@ from world.grass import Grass
 from world.grass import Wind
 from entities.giraffes import Giraffe
 from entities.lions import Lion
+from entities.zebras import Zebra
 from world.statistics import Statistics
 from entities.humans.humans import Human
 from entities.humans.houses import House
@@ -23,10 +24,11 @@ class Simulation:
         self.clock = pygame.time.Clock()
         self.FPS = 60
         self.initial_trees = 40
-        self.initial_grass = 20
+        self.initial_grass = 50
         self.initial_giraffes = 20
         self.initial_lions = 4
         self.initial_humans = 4
+        self.initial_zebras = 15
 
         self.season = Season(self.screen_x, self.screen_y, self.screen)
 
@@ -81,6 +83,12 @@ class Simulation:
         for i in range(self.initial_humans):
             human = Human(screen_x, screen_y, screen, self.human_spawn_pos, self.human_group, self.giraffe_group)
             self.human_group.add(human)
+
+
+        self.zebra_group = pygame.sprite.Group()
+        for i in range(self.initial_zebras):
+            zebra = Zebra(screen_x, screen_y, screen)
+            self.zebra_group.add(zebra)
 
         
         self.disease = Disease()
@@ -164,6 +172,9 @@ class Simulation:
         for lion in self.lion_group:
             lion.update(self.giraffe_group, self.lion_group, self.season.season)
 
+        for zebra in self.zebra_group:
+            zebra.update(self.grass_group, self.zebra_group, self.lion_group, self.season.season)
+
 
         #Storage house
         self.tot_food_storage = 0
@@ -246,6 +257,10 @@ class Simulation:
         #humans
         for human in self.human_group:
             human.draw()
+
+        #zebras
+        for zebra in self.zebra_group:
+            zebra.draw()
 
         
 

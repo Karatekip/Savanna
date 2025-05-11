@@ -102,7 +102,7 @@ class Statistics:
         self.screen.blit(house_wood_text, (10, 290))
         self.screen.blit(house_food_text, (10, 310))
         
-        self.screen.blit(season_progression_text, (1000, 10))
+        self.screen.blit(season_progression_text, (10, 330))
 
         '''
         self.screen.blit(comment_text, (10, 400))
