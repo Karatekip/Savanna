@@ -29,9 +29,23 @@ class Zebra(pygame.sprite.Sprite):
         self.max_age = random.randint(2000, 15000)
         self.x_pos, self.y_pos = random.randint(50, screen_x - 50), random.randint(50, screen_y - 50)
 
+        self.change_dir_interval = 100
+        self.change_dir_timer = 0
+        self.x_dir = random.choice([-1, 1])
+        self.y_dir = random.choice([-1, 1])
+
     def update(self, grass_group, zebra_group, lion_group, season):
         # hunger
         self.hunger += self.hunger_speed
+        if self.hunger > 100:
+            self.die("died of hunger")
+        
+        # age
+        self.age += 1
+        if self.age > self.max_age:
+            self.die("died of old age")
+
+
         # movement
         if self.hunger > 10:
             if len(grass_group) > 10:
@@ -49,10 +63,34 @@ class Zebra(pygame.sprite.Sprite):
                     closest_grass.kill()
         else:
             #mover randomly
-            self.x_pos += random.uniform(-self.speed, self.speed)
-            self.y_pos += random.uniform(-self.speed, self.speed)
+            if self.change_dir_timer > self.change_dir_interval:
+                self.x_dir = random.choice([-1, 0, 1])
+                self.y_dir = random.choice([-1, 0,1])
+                self.change_dir_timer = 0
+
+
+            self.x_pos += self.x_dir * self.speed
+            self.y_pos += self.x_dir * self.speed
             self.rect.center = (int(self.x_pos), int(self.y_pos))
+        
+        if self.rect.left < 0 or self.rect.right > self.screen_x:
+            self.x_dir *= -1
+        if self.rect.top < 0 or self.rect.bottom > self.screen_y:
+            self.y_dir *= -1
+        self.change_dir_timer += 1
+
+
+    def die(self, comment=None):
+        self.kill()
+        if comment:
+            print(comment)
+
             
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
+        # draw stats under the zebra
+        stats = f"Age: {int(self.age / 600)}/{int(self.max_age / 600)} Hunger: {self.hunger:.2f}"
+        text = self.font.render(stats, True, (255, 255, 255))
+        text_rect = text.get_rect(center=(self.rect.centerx, self.rect.bottom + 10))
+        self.screen.blit(text, text_rect)

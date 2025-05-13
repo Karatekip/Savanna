@@ -312,7 +312,8 @@ class Human(pygame.sprite.Sprite):
 
         
         # handel lions in village
-        closest_lion_to_village = min(lions_group, key=lambda lion: pygame.math.Vector2(main_house.rect.center).distance_to(pygame.math.Vector2(lion.rect.center)))
+        if len(lions_group) > 0:
+            closest_lion_to_village = min(lions_group, key=lambda lion: pygame.math.Vector2(main_house.rect.center).distance_to(pygame.math.Vector2(lion.rect.center)))
         for house in house_group:
             if closest_lion_to_village.rect.colliderect(house.rect):
                 self.hunt(closest_lion_to_village, lions_group)
