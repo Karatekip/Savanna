@@ -17,9 +17,25 @@ class Wind(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (random.randint(2, self.screen_x), random.randint(0, self.screen_y))
         self.wind_speed = random.randint(2, 4)
+        self.wind_dif = random.uniform(1.5, 0.5)
 
 
-    def update(self):
+    def update(self, season, season_progression):
+        max_speed = 10
+        min_speed = 1
+        progression_clamped = max(0, min(2000, season_progression))
+        if season == "dry":
+            if season_progression > 1000:
+                self.wind_speed = (max_speed - (max_speed - min_speed) * (progression_clamped / 2000)) * self.wind_dif
+            elif season_progression < 1000:
+                self.wind_speed = (min_speed + (max_speed - min_speed) * (progression_clamped / 2000)) * self.wind_dif
+        elif season == "rain":
+            if season_progression > 1000:
+                self.wind_speed = (min_speed + (max_speed - min_speed) * (progression_clamped / 2000)) * self.wind_dif
+            elif season_progression < 1000:
+                self.wind_speed = (max_speed - (max_speed - min_speed) * (progression_clamped / 2000)) * self.wind_dif
+
+
         if self.rect.centerx < 0:
             self.reset()
         else:
@@ -33,8 +49,8 @@ class Wind(pygame.sprite.Sprite):
 
 
     def draw(self):
-        #self.screen.blit(self.image, self.rect.topleft)
-        pass
+        self.screen.blit(self.image, self.rect.topleft)
+        #pass
 
 
 class Grass(pygame.sprite.Sprite):

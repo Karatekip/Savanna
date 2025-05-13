@@ -225,7 +225,7 @@ class Human(pygame.sprite.Sprite):
             if self.mission == "hunt_lion":
                 if len(lions_group) == 0:
                     return
-                if len(self.lion_group) > 0:
+                if len(lions_group) > 0:
                     closest_lion = min(lions_group, key=lambda lion: pygame.math.Vector2(self.rect.center).distance_to(pygame.math.Vector2(lion.rect.center)))
                 self.hunt(closest_lion, lions_group)
                 

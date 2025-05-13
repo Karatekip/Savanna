@@ -161,7 +161,7 @@ class Simulation:
             grass.update(self.grass_group, self.season, self.tree_group, self.house_group, self.wind_group)
 
         for wind_wave in self.wind_group:
-            wind_wave.update()
+            wind_wave.update(self.season.season, self.season.progression)
 
 
         #Giraffes
