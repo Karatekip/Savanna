@@ -67,7 +67,7 @@ class Grass(pygame.sprite.Sprite):
     def update(self, grass_group, season, tree_group, house_group, wind_group):
         # growing
         if season.season == "dry":
-            self.growth_timer += 0.5
+            self.growth_timer += 1
         else:
             self.growth_timer += 3
         if self.growth_timer > self.growth_delay:
