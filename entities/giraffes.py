@@ -46,8 +46,8 @@ class Giraffe(pygame.sprite.Sprite):
         #movement
         self.change_direction_timer += 1
         if self.change_direction_timer > self.change_direction_interval:
-            self.x_dir = random.choice([-1, 0, 1]) * self.speed
-            self.y_dir = random.choice([-1, 0, 1]) * self.speed
+            self.x_dir = random.uniform(-self.speed, self.speed)
+            self.y_dir = random.uniform(-self.speed, self.speed)
             self.change_direction_timer = 0
             #print("changing direction")
         else:
